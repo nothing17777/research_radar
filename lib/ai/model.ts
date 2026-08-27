@@ -1,11 +1,11 @@
-import { createOpenAI, openai } from "@ai-sdk/openai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { google } from "@ai-sdk/google";
 import type { EmbeddingModel, LanguageModel } from "ai";
 
 export const OLLAMA_MODEL = "qwen2.5:3b-instruct";
 export const GEMINI_MODEL = "gemini-2.5-flash";
 export const OLLAMA_EMBEDDING_MODEL = "nomic-embed-text";
-export const OPENAI_EMBEDDING_MODEL = "text-embedding-3-small";
+export const GEMINI_EMBEDDING_MODEL = "gemini-embedding-001";
 
 const ollama = createOpenAI({
   baseURL: "http://localhost:11434/v1",
@@ -23,14 +23,20 @@ export function getAnalysisModelName(): string {
   return process.env.NODE_ENV === "development" ? OLLAMA_MODEL : GEMINI_MODEL;
 }
 
-// Dev has no OPENAI_API_KEY configured, so local runs fall back to Ollama's
-// nomic-embed-text (768 dims) and get zero-padded up to the schema's
-// vector(1536) in embedPaper.ts — zero-padding both sides of a cosine
-// similarity leaves the result unchanged. Production always uses OpenAI's
-// text-embedding-3-small per AGENTS.md section 20.
+// Dev uses Ollama's free nomic-embed-text (768 dims), zero-padded up to the
+// schema's vector(1536) in embedPaper.ts — zero-padding both sides of a
+// cosine similarity leaves the result unchanged. Production uses Google's
+// free gemini-embedding-001, requested at 1536 dims via outputDimensionality
+// so both environments write directly comparable vectors into the same
+// vector(1536) column without a schema change.
 export function getEmbeddingModel(): EmbeddingModel {
   if (process.env.NODE_ENV === "development") {
     return ollama.embeddingModel(OLLAMA_EMBEDDING_MODEL);
   }
-  return openai.embeddingModel(OPENAI_EMBEDDING_MODEL);
+  return google.embeddingModel(GEMINI_EMBEDDING_MODEL);
+}
+
+export function getEmbeddingProviderOptions() {
+  if (process.env.NODE_ENV === "development") return undefined;
+  return { google: { outputDimensionality: 1536 } };
 }

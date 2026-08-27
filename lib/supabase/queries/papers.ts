@@ -1,9 +1,9 @@
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/server";
-import type { PaperAnalysisRow, PaperInsert, PaperRow, SourceRow } from "@/lib/supabase/types";
+import type { ContentKind, PaperAnalysisRow, PaperInsert, PaperRow, SourceRow } from "@/lib/supabase/types";
 
 const URL_CHUNK_SIZE = 15;
 
-export type ItemKind = "paper" | "repo";
+export type ItemKind = ContentKind;
 
 export interface PaperDisplayItem {
   paper: PaperRow;
@@ -13,6 +13,7 @@ export interface PaperDisplayItem {
 }
 
 function kindForSource(source: SourceRow): ItemKind {
+  if (source.content_kind) return source.content_kind;
   return source.parser_strategy === "github_trending" ? "repo" : "paper";
 }
 

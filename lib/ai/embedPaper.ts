@@ -1,5 +1,5 @@
 import { embed } from "ai";
-import { getEmbeddingModel } from "@/lib/ai/model";
+import { getEmbeddingModel, getEmbeddingProviderOptions } from "@/lib/ai/model";
 import type { PaperAnalysisInsert, PaperRow } from "@/lib/supabase/types";
 
 const EMBEDDING_DIMENSIONS = 1536;
@@ -11,6 +11,7 @@ export async function embedPaper(
   const { embedding } = await embed({
     model: getEmbeddingModel(),
     value: `${paper.title}\n\n${analysis.neutral_summary}`,
+    providerOptions: getEmbeddingProviderOptions(),
   });
 
   if (embedding.length === EMBEDDING_DIMENSIONS) return embedding;

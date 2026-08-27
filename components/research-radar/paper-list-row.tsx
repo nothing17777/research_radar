@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { DifficultyBadge } from "@/components/research-radar/difficulty-badge";
 import { KindIcon } from "@/components/research-radar/kind-icon";
 import type { PaperCardData } from "@/components/research-radar/paper-card";
+import { kindLabel } from "@/lib/papers/display";
 
 export function PaperListRow({
   data,
@@ -22,7 +23,7 @@ export function PaperListRow({
     >
       <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground">
         <KindIcon kind={data.kind} />
-        {data.kind === "repo" ? "GitHub repo" : "Paper"}
+        {kindLabel(data.kind)}
       </span>
       <h3 className="text-sm font-semibold text-card-foreground">{data.title}</h3>
       <p className="line-clamp-2 text-xs text-muted-foreground">{data.excerpt}</p>

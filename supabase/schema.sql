@@ -15,6 +15,12 @@ create table if not exists public.sources (
   parser_strategy text,
   is_active boolean not null default true,
   logo_url text,
+  -- Explicit item kind for this source (paper, repo, dataset, model,
+  -- newsletter, video). Null falls back to inferring from parser_strategy
+  -- (github_trending -> repo, else paper) for backward compatibility with
+  -- rows created before this column existed.
+  content_kind text
+    check (content_kind in ('paper', 'repo', 'dataset', 'model', 'newsletter', 'video')),
   created_at timestamptz not null default now()
 );
 
@@ -88,6 +94,24 @@ as $$
   from public.paper_analyses
   where embedding is not null
     and paper_id <> match_paper_id
+  order by embedding <=> query_embedding
+  limit match_count;
+$$;
+
+-- Scout (the RAG chat app) query lookup: same shape as match_related_papers
+-- but with no "exclude this paper" filter, since a chat query embedding
+-- isn't itself one of the stored papers.
+create or replace function public.match_papers_by_query(
+  query_embedding vector(1536),
+  match_count int
+)
+returns table (paper_id uuid, distance float)
+language sql
+stable
+as $$
+  select paper_id, embedding <=> query_embedding as distance
+  from public.paper_analyses
+  where embedding is not null
   order by embedding <=> query_embedding
   limit match_count;
 $$;

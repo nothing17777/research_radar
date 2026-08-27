@@ -9,6 +9,10 @@ import type { SourceRow } from "@/lib/supabase/types";
 
 const DEFAULT_PER_SOURCE_LIMIT = 5;
 
+// Strategies with no reliable per-item publish date on the page — published_at
+// is stamped to scrape time instead (see processListingHtml below).
+const NO_DATE_STRATEGIES = ["github_trending", "huggingface_models", "huggingface_datasets"];
+
 interface RunOptions {
   sourceIds?: string[];
   perSourceLimit?: number;
@@ -75,7 +79,7 @@ export async function processListingHtml(
       continue;
     }
 
-    if (source.parser_strategy === "github_trending") {
+    if (NO_DATE_STRATEGIES.includes(source.parser_strategy ?? "")) {
       parsed.publishedAt = new Date().toISOString();
     }
 

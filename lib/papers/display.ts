@@ -24,3 +24,16 @@ export function truncate(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return `${text.slice(0, maxLength - 1).trimEnd()}…`;
 }
+
+const KIND_LABELS: Record<string, string> = {
+  repo: "GitHub repo",
+  dataset: "Dataset",
+  model: "Model",
+  newsletter: "Newsletter",
+  video: "Video",
+  paper: "Paper",
+};
+
+export function kindLabel(kind: string): string {
+  return KIND_LABELS[kind] ?? "Paper";
+}

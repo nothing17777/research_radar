@@ -4,6 +4,7 @@ import { Clock, BookOpen } from "lucide-react";
 import { DifficultyBadge, type Difficulty } from "./difficulty-badge";
 import { CategoryPill } from "./category-pill";
 import { KindIcon } from "./kind-icon";
+import { kindLabel } from "@/lib/papers/display";
 import type { ItemKind } from "@/lib/supabase/queries/papers";
 
 export type PaperCardData = {
@@ -37,7 +38,7 @@ export function PaperCard({ data }: { data: PaperCardData }) {
       <div className="flex flex-col gap-2 p-4">
         <span className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
           <KindIcon kind={data.kind} />
-          {data.kind === "repo" ? "GitHub repo" : "Paper"}
+          {kindLabel(data.kind)}
         </span>
         <h3 className="text-lg font-semibold text-card-foreground group-hover:underline">
           {data.title}

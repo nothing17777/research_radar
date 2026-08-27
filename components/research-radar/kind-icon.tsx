@@ -1,4 +1,4 @@
-import { FileText } from "lucide-react";
+import { FileText, Database, Boxes, Mail, Video } from "lucide-react";
 import type { ItemKind } from "@/lib/supabase/queries/papers";
 import { cn } from "@/lib/utils";
 
@@ -11,8 +11,18 @@ function GithubMark({ className }: { className?: string }) {
 }
 
 export function KindIcon({ kind, className }: { kind: ItemKind; className?: string }) {
-  if (kind === "repo") {
-    return <GithubMark className={cn("size-3.5", className)} />;
+  switch (kind) {
+    case "repo":
+      return <GithubMark className={cn("size-3.5", className)} />;
+    case "dataset":
+      return <Database className={cn("size-3.5", className)} aria-label="Dataset" />;
+    case "model":
+      return <Boxes className={cn("size-3.5", className)} aria-label="Model" />;
+    case "newsletter":
+      return <Mail className={cn("size-3.5", className)} aria-label="Newsletter" />;
+    case "video":
+      return <Video className={cn("size-3.5", className)} aria-label="Video" />;
+    default:
+      return <FileText className={cn("size-3.5", className)} aria-label="Paper" />;
   }
-  return <FileText className={cn("size-3.5", className)} aria-label="Paper" />;
 }

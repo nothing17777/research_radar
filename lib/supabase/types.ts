@@ -1,5 +1,6 @@
 export type DifficultyLabel = "beginner" | "intermediate" | "expert";
 export type LogLevel = "info" | "warn" | "error";
+export type ContentKind = "paper" | "repo" | "dataset" | "model" | "newsletter" | "video";
 
 export interface SourceRow {
   id: string;
@@ -8,6 +9,7 @@ export interface SourceRow {
   parser_strategy: string | null;
   is_active: boolean;
   logo_url: string | null;
+  content_kind: ContentKind | null;
   created_at: string;
 }
 
@@ -17,6 +19,7 @@ export interface SourceInsert {
   parser_strategy?: string | null;
   is_active?: boolean;
   logo_url?: string | null;
+  content_kind?: ContentKind | null;
 }
 
 export interface PaperRow {
@@ -199,6 +202,13 @@ export interface Database {
         Args: {
           query_embedding: number[];
           match_paper_id: string;
+          match_count: number;
+        };
+        Returns: { paper_id: string; distance: number }[];
+      };
+      match_papers_by_query: {
+        Args: {
+          query_embedding: number[];
           match_count: number;
         };
         Returns: { paper_id: string; distance: number }[];
